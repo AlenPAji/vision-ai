@@ -100,6 +100,21 @@ function useBluetoothClassic(): BluetoothClassicApi {
 
     };
 
+    const sendActivationMessage = async (device: Device) => {
+        try {
+            const activationMessage = "START\n"; // Adding newline for proper transmission
+            // Write to the specific connected device
+            const success = await BluetoothSerial.writeToDevice(device.id, activationMessage);
+            if (success) {
+                console.log("Activation message sent successfully to:", device.name);
+            } else {
+                console.warn("Failed to send activation message");
+            }
+        } catch (error) {
+            console.error("Error sending activation message:", error);
+        }
+    };
+
 
 
     const connectToDevice = async (device: Device) => {
@@ -115,6 +130,7 @@ function useBluetoothClassic(): BluetoothClassicApi {
             if (isConnected) {
                 setConnectedDevice(device);
                 console.log(`Connected to ${device.name}`);
+                await sendActivationMessage(device);
 
                 startStreamingData(device);
             }
